@@ -1,0 +1,36 @@
+\chapter{Conclusions}
+\label{ch:con}
+%
+
+
+\section{Summary of applied methods}
+
+For Problem A, the VPINN approach proved very well-suited as it incorporated the weak form. This avoided having to compute any higher order derivatives, and even the 1st order ones were known since they come from Legendre polynomials. This gives VPINN a strong advantage over a regular PINN in this type of problem.
+
+For Problem B, ParticleWNN initially stood out to me as the method of choice to approximate the heterogeneous pressure field. My hope was that the locally-supported test functions could approximate the randomly distributed features of the material field without affecting the rest of the domain. However, even this type of network struggled to complete the task to its full extent and required tedious fine-tuning of hyperparameters to get acceptable performance. Perhaps a different type of physics-informed method could have achieved better performance.
+
+In Problem C, the FNO approach yielded excellent results with very few training epochs. The network seemed to be very successful at capturing periodic spatial patterns in a way that a point-wise MLP would likely not be able to do. Furthermore, the fact that this dataset is fully labeled and does not call for a PDE loss term establishes FNO as the undisputed method of choice for this problem.
+
+Finally, the PINO method showed very decent performance on Problem D, albeit with the help of the boundary-vanishing mask that hard-enforced boundary conditions and initial conditions. It was also the slowest of all 4 methods during the training phase, but much like the regular FNO it converged quickly. Despite not achieving an extreme level of accuracy, the PINO still remains a very practical option for engineering tasks due to its ability to work with semi-supervised datasets.
+
+\section{Reflections}
+
+After completing this project, it is clear to me that each PDE-related problem requires careful analysis in order to determine which methods are applicable, and even further analysis to choose which method is the most suitable out of the available ones. Nevertheless, this decision is not always obvious, and it is often the case that multiple methods must be tried before one is found that gives acceptable performance. Because of this, I found the complexity of implementation to be one of the most decisive factors when choosing a deep learning method.
+
+Alongside the implementation complexity is the training time requirement, which unfortunately can only be gauged once a method has already been fully implemented. Although the training time may be somewhat predictable by theory, it is impossible to know exactly how well a model will perform on a dataset in advance, which may force you to increase the number of model parameters. This will lead to increases in training time, making this time highly unpredictable. The dimensionality of the data should certainly be considered here.
+
+Another theme I found to be recurring across all problems is the trade-off between the expressive power of a network (which relates to parameter count) and its train-ability. Larger models can capture more complex behavior at the cost of slower iterations, which may be an issue depending on the hardware one has available. During training, I often ran into CUDA memory limitations or situations where the transfer of data to the GPU was simply too slow to be practical, which forced me into reducing batch sizes and other downgrades.
+
+Overall, I found the application of deep learning methods to PDEs to be a very interesting innovation. I think they have a very significant potential to compete with classical methods in scenarios where many repeated computations of the same PDE family are needed. I also believe these methods will only continue to get better in the future as machine learning is a field with extremely fast development right now, while classical methods have been around for much longer and will likely not see much more innovation. On the other hand, the lack of a convergence guarantee and their implementation complexity are major drawbacks of deep learning methods in my opinion. They are also more inaccessible to those engineers, researchers and scientists without a machine learning background, while classical methods are currently more widespread.
+
+\subsection{Potential improvements}
+
+Some of the potential improvements that could be made to my implementations are the following:
+
+\begin{itemize}
+	\item Adapting the loss weighting during training to change the relative importance of each loss term at each stage of the training process. This would allow, for instance, initially learning to satisfy the boundary conditions without worrying about internal points, then increasing the PDE loss to satisfy the equation across the whole domain.
+	\item Performing data augmentation by rotating, reflecting or cropping the training and testing data in order to have more diverse datasets. This would make the models generalize better.
+	\item Training multiple copies of the same model with different weight initializations and averaging their predictions to reduce variance. 
+\end{itemize}
+
+
